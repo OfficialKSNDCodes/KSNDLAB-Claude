@@ -508,6 +508,291 @@
     filter:blur(2px);
   }
 
+  /* ===== PASS 05 — central machine / codable pod fallback ===== */
+  .pod-fallback{
+    position:absolute;
+    z-index:1;
+    left:50%;
+    top:5%;
+    width:67%;
+    height:86%;
+    transform:translateX(-50%);
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .pod-fallback-active .pod-fallback{
+    opacity:1;
+  }
+
+  /* Circular upper gantry, matching the new art direction. */
+  .bay-ceiling{
+    height:58px;
+    left:2%;
+    right:2%;
+    top:1%;
+    border-radius:50%;
+    background:
+      radial-gradient(ellipse at center,
+        transparent 0 57%,
+        rgba(240,198,117,.055) 58% 59%,
+        rgba(4,3,1,.98) 60% 82%,
+        transparent 83%);
+    border:0;
+    box-shadow:none;
+  }
+
+  .bay-ceiling::before{
+    content:"";
+    position:absolute;
+    inset:-24px 12%;
+    border:1px solid rgba(212,162,78,.065);
+    border-radius:50%;
+    box-shadow:
+      inset 0 0 18px rgba(212,162,78,.025),
+      0 0 30px rgba(212,162,78,.025);
+  }
+
+  .bay-ceiling::after{
+    left:23%;
+    right:23%;
+    bottom:27px;
+    height:2px;
+    background:linear-gradient(90deg,transparent,rgba(240,198,117,.32),transparent);
+  }
+
+  .bay-rail{
+    top:10%;
+    bottom:7%;
+    width:10px;
+  }
+
+  .bay-rail-left{ left:13%; }
+  .bay-rail-right{ right:13%; }
+
+  .bay-strut{
+    top:7%;
+    bottom:5%;
+    width:34px;
+    border-radius:12px;
+    background:
+      linear-gradient(90deg,
+        #000 0%,
+        rgba(42,27,8,.72) 28%,
+        rgba(12,9,3,.96) 55%,
+        rgba(52,33,9,.52) 75%,
+        #000 100%);
+  }
+
+  .bay-strut-left{ left:4%; }
+  .bay-strut-right{ right:4%; }
+
+  /* Mechanical couplers on the struts. */
+  .bay-strut::before,
+  .bay-strut::after{
+    content:"";
+    position:absolute;
+    left:-5px;
+    right:-5px;
+    height:32px;
+    border:1px solid rgba(212,162,78,.07);
+    border-radius:5px;
+    background:
+      linear-gradient(180deg,
+        rgba(240,198,117,.06),
+        rgba(0,0,0,.9));
+    box-shadow:0 0 14px rgba(0,0,0,.75);
+  }
+
+  .bay-strut::before{ top:19%; }
+  .bay-strut::after{ bottom:22%; }
+
+  .fallback-top{
+    position:absolute;
+    left:4%;
+    right:4%;
+    top:2%;
+    height:18%;
+    z-index:4;
+    border-radius:22px 22px 10px 10px;
+    border:1px solid rgba(212,162,78,.17);
+    background:
+      linear-gradient(180deg,
+        rgba(24,16,5,.98),
+        rgba(5,4,2,.98));
+    box-shadow:
+      inset 0 -12px 18px rgba(240,198,117,.025),
+      0 12px 28px rgba(0,0,0,.8);
+    padding:13px 16px;
+    color:rgba(240,198,117,.8);
+    font-family:var(--font-body);
+    letter-spacing:1.5px;
+  }
+
+  .fallback-top span{
+    display:block;
+    font-family:var(--font-display);
+    font-size:10px;
+    letter-spacing:1.8px;
+  }
+
+  .fallback-top small{
+    display:block;
+    margin-top:4px;
+    font-size:7px;
+    line-height:1.45;
+    opacity:.72;
+  }
+
+  .fallback-top b{
+    position:absolute;
+    right:15px;
+    top:17px;
+    font-size:20px;
+    font-weight:400;
+  }
+
+  .fallback-glass{
+    position:absolute;
+    left:14%;
+    right:14%;
+    top:18%;
+    bottom:8%;
+    border-left:1px solid rgba(240,198,117,.34);
+    border-right:1px solid rgba(240,198,117,.34);
+    border-radius:28px 28px 20px 20px;
+    background:
+      radial-gradient(ellipse at 50% 82%,
+        rgba(240,198,117,.10),
+        transparent 42%),
+      linear-gradient(90deg,
+        rgba(240,198,117,.025),
+        rgba(0,0,0,.52) 18%,
+        rgba(0,0,0,.82) 50%,
+        rgba(0,0,0,.52) 82%,
+        rgba(240,198,117,.025));
+    box-shadow:
+      inset 0 0 30px rgba(240,198,117,.035),
+      0 0 24px rgba(240,198,117,.035);
+    overflow:hidden;
+  }
+
+  .fallback-glass::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    background:
+      linear-gradient(90deg,
+        rgba(255,255,255,.08),
+        transparent 9% 91%,
+        rgba(255,255,255,.055));
+    opacity:.45;
+  }
+
+  .fallback-ring{
+    position:absolute;
+    left:50%;
+    width:92%;
+    height:44px;
+    transform:translateX(-50%);
+    border:2px solid rgba(240,198,117,.82);
+    border-radius:50%;
+    box-shadow:
+      0 0 10px rgba(240,198,117,.35),
+      inset 0 0 9px rgba(240,198,117,.18);
+  }
+
+  .fallback-ring-top{ top:-23px; }
+  .fallback-ring-bottom{ bottom:-23px; }
+
+  .fallback-particles{
+    position:absolute;
+    inset:0;
+    opacity:.45;
+    background-image:
+      radial-gradient(1px 1px at 21% 24%, rgba(240,198,117,.7), transparent),
+      radial-gradient(1px 1px at 67% 17%, rgba(240,198,117,.6), transparent),
+      radial-gradient(1px 1px at 39% 49%, rgba(240,198,117,.65), transparent),
+      radial-gradient(1px 1px at 74% 63%, rgba(240,198,117,.5), transparent),
+      radial-gradient(1px 1px at 30% 78%, rgba(240,198,117,.5), transparent),
+      radial-gradient(1px 1px at 82% 86%, rgba(240,198,117,.55), transparent);
+    background-size:150px 170px;
+  }
+
+  .fallback-logo{
+    position:absolute;
+    left:50%;
+    top:47%;
+    transform:translate(-50%,-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:#e9b95e;
+    text-shadow:0 0 14px rgba(240,198,117,.22);
+  }
+
+  .fallback-mark{
+    font-size:74px;
+    line-height:.8;
+    font-family:Georgia,serif;
+    transform:scaleX(.88);
+  }
+
+  .fallback-logo strong{
+    margin-top:10px;
+    font-family:Georgia,serif;
+    font-size:38px;
+    letter-spacing:1px;
+  }
+
+  .fallback-logo span{
+    margin-top:2px;
+    font-family:var(--font-display);
+    font-size:13px;
+    letter-spacing:7px;
+    margin-left:7px;
+  }
+
+  .fallback-base{
+    position:absolute;
+    left:7%;
+    right:7%;
+    bottom:1%;
+    height:15%;
+    border-radius:50%;
+    border:1px solid rgba(212,162,78,.14);
+    background:
+      radial-gradient(ellipse at center,
+        rgba(240,198,117,.12) 0%,
+        rgba(24,15,4,.82) 42%,
+        rgba(0,0,0,.98) 70%);
+    box-shadow:
+      0 -8px 22px rgba(240,198,117,.04),
+      0 18px 35px rgba(0,0,0,.9);
+  }
+
+  .fallback-base::before{
+    content:"";
+    position:absolute;
+    left:13%;
+    right:13%;
+    top:14%;
+    height:28%;
+    border:1px solid rgba(240,198,117,.34);
+    border-radius:50%;
+  }
+
+  /* If the real asset loads, keep it dominant but let the machine frame it. */
+  .pod-wrap:not(.pod-fallback-active) .pod-fallback{
+    display:none;
+  }
+
+  .pod-wrap:not(.pod-fallback-active) img{
+    position:relative;
+    z-index:5;
+  }
+
   .pod-wrap{
     position:relative;
     width:100%;
@@ -529,17 +814,17 @@
       drop-shadow(0 34px 55px rgba(0,0,0,.92))
       drop-shadow(0 0 18px rgba(212,162,78,.09));
     -webkit-mask-image:
-      linear-gradient(to bottom,
-        transparent 0%,
-        #000 4%,
-        #000 94%,
-        transparent 100%);
+      radial-gradient(ellipse 74% 78% at 50% 49%,
+        #000 0%,
+        #000 64%,
+        rgba(0,0,0,.88) 73%,
+        transparent 94%);
     mask-image:
-      linear-gradient(to bottom,
-        transparent 0%,
-        #000 4%,
-        #000 94%,
-        transparent 100%);
+      radial-gradient(ellipse 74% 78% at 50% 49%,
+        #000 0%,
+        #000 64%,
+        rgba(0,0,0,.88) 73%,
+        transparent 94%);
     animation:float 6s ease-in-out infinite;
   }
 
@@ -584,7 +869,7 @@
   }
 
   .enter-btn{
-    margin-top: -1px;
+    margin-top: -8px;
     width:100%;
     max-width:420px;
     background: rgba(212,162,78,.04);
@@ -787,7 +1072,30 @@
         <div class="bay-floor" aria-hidden="true"></div>
 
         <div class="pod-wrap">
-          <img src="assets/pod.png" alt="KSND Lab adaptive reconstruction unit — a glowing gold and black containment pod">
+          <div class="pod-fallback" aria-hidden="true">
+            <div class="fallback-top">
+              <span>KSND LAB</span>
+              <small>ADAPTIVE RECONSTRUCTION UNIT<br>ARC-001</small>
+              <b>△</b>
+            </div>
+            <div class="fallback-glass">
+              <div class="fallback-particles"></div>
+              <div class="fallback-logo">
+                <div class="fallback-mark">△</div>
+                <strong>KSND</strong>
+                <span>LAB</span>
+              </div>
+              <i class="fallback-ring fallback-ring-top"></i>
+              <i class="fallback-ring fallback-ring-bottom"></i>
+            </div>
+            <div class="fallback-base"></div>
+          </div>
+
+          <img
+            src="assets/pod.png"
+            alt="KSND Lab adaptive reconstruction unit — a glowing gold and black containment pod"
+            onerror="this.hidden=true; this.parentElement.classList.add('pod-fallback-active')"
+          >
         </div>
       </div>
       <a href="#" class="enter-btn">ENTER THE SYSTEM <span class="arrow">&#8594;</span></a>
