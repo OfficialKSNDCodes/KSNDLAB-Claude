@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSND Lab — System Active</title>
+<style>
+  :root{
+    --gold: #d4a24e;
+    --gold-bright: #f0c675;
+    --bg: #050403;
+    --bg2: #0a0806;
+    --text-dim: #7a7268;
+    --text-dimmer: #4a453d;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: #e8e0d0;
+    font-family: 'Courier New', ui-monospace, monospace;
+    height:100%;
+    overflow-x:hidden;
+  }
+
+  /* faint starfield */
+  .stars{
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(212,162,78,.35), transparent),
+      radial-gradient(1px 1px at 70% 60%, rgba(212,162,78,.25), transparent),
+      radial-gradient(1px 1px at 40% 80%, rgba(212,162,78,.3), transparent),
+      radial-gradient(1px 1px at 85% 20%, rgba(212,162,78,.2), transparent),
+      radial-gradient(1px 1px at 55% 45%, rgba(212,162,78,.25), transparent),
+      radial-gradient(1px 1px at 10% 65%, rgba(212,162,78,.2), transparent),
+      radial-gradient(1px 1px at 90% 85%, rgba(212,162,78,.25), transparent);
+    background-repeat: repeat;
+    background-size: 400px 400px;
+    pointer-events:none;
+    opacity:.6;
+    z-index:0;
+  }
+
+  .vignette{
+    position:fixed; inset:0;
+    background: radial-gradient(ellipse at 50% 45%, rgba(212,162,78,.06) 0%, rgba(0,0,0,0) 55%),
+                radial-gradient(ellipse at 50% 100%, rgba(0,0,0,.9) 0%, transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .floorlines{
+    position:fixed; left:0; right:0; bottom:0; height:22vh;
+    background-image: repeating-linear-gradient(90deg, rgba(212,162,78,.05) 0px, rgba(212,162,78,.05) 1px, transparent 1px, transparent 90px);
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,.8), transparent);
+    mask-image: linear-gradient(to top, rgba(0,0,0,.8), transparent);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .stage{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    display:grid;
+    grid-template-columns: 1fr minmax(280px, 420px) 1fr;
+    align-items:center;
+    padding: 40px 5vw 60px;
+    gap: 24px;
+  }
+
+  /* ===== Top labels ===== */
+  .topleft{
+    position:absolute; top:40px; left:5vw;
+  }
+  .brand-mark{
+    font-size:26px; letter-spacing:10px; font-weight:700; color:#f2ead9;
+    margin:0 0 6px 0;
+  }
+  .brand-mark .dots{ color: var(--text-dimmer); letter-spacing:6px; }
+  .brand-sub{
+    font-size:11px; letter-spacing:3px; color: var(--text-dim);
+  }
+
+  .topright{
+    position:absolute; top:44px; right:5vw;
+    display:flex; align-items:center; gap:10px;
+    font-size:11px; letter-spacing:3px; color: var(--text-dim);
+  }
+  .status-dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 8px 2px rgba(240,198,117,.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:.35; }
+  }
+
+  /* ===== Left info column ===== */
+  .left-col{
+    position:relative;
+    padding-top: 40px;
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+    font-size:11px;
+    letter-spacing:2px;
+    color: var(--text-dim);
+  }
+  .left-col .field-label{
+    display:block;
+    color: var(--text-dimmer);
+    margin-bottom:6px;
+    font-size:10px;
+    letter-spacing:3px;
+  }
+  .left-col .field-value{
+    color:#eee3cc;
+    font-size:13px;
+    letter-spacing:2px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .left-col .field-value.active::before,
+  .left-col .field-value.system::before{
+    content:"";
+    width:6px; height:6px; border-radius:50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 6px 1px rgba(240,198,117,.7);
+  }
+  .glyph{
+    margin-top:20px;
+    width:34px; height:34px;
+    border:1px solid var(--text-dimmer);
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(0deg);
+    color: var(--text-dim);
+    font-size:14px;
+  }
+  .socials{
+    position:absolute;
+    bottom:-260px;
+    left:0;
+    display:flex;
+    gap:18px;
+  }
+  .socials a{
+    color: var(--text-dim);
+    text-decoration:none;
+    font-size:14px;
+    border:1px solid var(--text-dimmer);
+    width:30px; height:30px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    transition: all .25s ease;
+  }
+  .socials a:hover{
+    color: var(--gold-bright);
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 10px rgba(240,198,117,.35);
+  }
+
+  /* ===== Center pod ===== */
+  .center-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .pod-wrap{
+    position:relative;
+    width:100%;
+    max-width:420px;
+  }
+  .pod-wrap img{
+    width:100%;
+    display:block;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,.7));
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform: translateY(0px); }
+    50%{ transform: translateY(-8px); }
+  }
+
+  .enter-btn{
+    margin-top: 18px;
+    width:100%;
+    max-width:420px;
+    background: rgba(212,162,78,.04);
+    border: 1px solid rgba(212,162,78,.55);
+    color: #f2ead9;
+    font-family: inherit;
+    letter-spacing: 5px;
+    font-size: 13px;
+    padding: 18px 26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    cursor:pointer;
+    text-decoration:none;
+    text-align:center;
+    transition: all .3s ease;
+    box-shadow: inset 0 0 20px rgba(212,162,78,.05);
+  }
+  .enter-btn:hover{
+    background: rgba(212,162,78,.1);
+    box-shadow: 0 0 25px rgba(212,162,78,.25), inset 0 0 25px rgba(212,162,78,.1);
+    border-color: var(--gold-bright);
+    letter-spacing:6px;
+  }
+  .enter-btn:focus-visible{
+    outline: 2px solid var(--gold-bright);
+    outline-offset: 4px;
+  }
+  .enter-btn .arrow{ transition: transform .3s ease; }
+  .enter-btn:hover .arrow{ transform: translateX(6px); }
+
+  .awaiting{
+    margin-top:16px;
+    font-size:10px;
+    letter-spacing:4px;
+    color: var(--text-dimmer);
+  }
+  .awaiting .blink{
+    display:inline-block;
+    animation: blink 1.6s steps(1) infinite;
+  }
+  @keyframes blink{
+    50%{ opacity:0; }
+  }
+
+  /* ===== Right column ===== */
+  .right-col{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    text-align:right;
+    gap:8px;
+    padding-top:40px;
+  }
+  .infinity-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:26px;
+    color: var(--gold-bright);
+    letter-spacing:2px;
+  }
+  .infinity-row .slash{
+    color: var(--text-dimmer);
+    font-size:20px;
+  }
+  .infinity-row .grey-inf{
+    color: var(--text-dimmer);
+  }
+  .rule{
+    width:140px;
+    height:1px;
+    background: linear-gradient(to left, rgba(212,162,78,.5), transparent);
+    margin: 8px 0 18px;
+  }
+  .mission-label{
+    font-size:10px;
+    letter-spacing:3px;
+    color: var(--text-dimmer);
+    margin-bottom:8px;
+  }
+  .mission-text{
+    font-size:15px;
+    letter-spacing:2px;
+    color:#eee3cc;
+    line-height:1.6;
+  }
+  .dashes{
+    margin-top:30px;
+    display:flex;
+    gap:6px;
+  }
+  .dashes span{
+    width:18px; height:2px;
+    background: var(--gold);
+    opacity:.4;
+  }
+  .dashes span:nth-child(1){ opacity:.9; }
+  .dashes span:nth-child(2){ opacity:.6; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px){
+    .stage{
+      grid-template-columns: 1fr;
+      padding-top: 140px;
+      gap: 50px;
+    }
+    .left-col, .right-col{
+      align-items:center;
+      text-align:center;
+      padding-top:0;
+    }
+    .right-col{ align-items:center; }
+    .rule{ margin-left:auto; margin-right:auto; }
+    .socials{ position:static; margin-top:30px; justify-content:center; }
+    .glyph{ margin-left:auto; margin-right:auto; }
+    .topleft{ left:50%; transform:translateX(-50%); text-align:center; }
+    .topright{ left:50%; right:auto; transform:translateX(-50%); top:16px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="stars"></div>
+  <div class="vignette"></div>
+  <div class="floorlines"></div>
+
+  <div class="topleft">
+    <p class="brand-mark">K S N D <span class="dots">. . . . .</span></p>
+    <p class="brand-sub">RESEARCH &bull; BUILD &bull; SYSTEM ACTIVE</p>
+  </div>
+
+  <div class="topright">
+    <span class="status-dot"></span>
+    <span>SYSTEM STATUS</span>
+  </div>
+
+  <div class="stage">
+    <div class="left-col">
+      <div>
+        <span class="field-label">PROJECT</span>
+        <span class="field-value">KSND LAB</span>
+      </div>
+      <div>
+        <span class="field-label">BUILD MODE</span>
+        <span class="field-value active">DISCOVERY</span>
+      </div>
+      <div>
+        <span class="field-label">SYSTEM</span>
+        <span class="field-value system">ACTIVE</span>
+      </div>
+      <div class="glyph">&#9661;</div>
+
+      <div class="socials">
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="YouTube">YT</a>
+        <a href="#" aria-label="Email">@</a>
+      </div>
+    </div>
+
+    <div class="center-col">
+      <div class="pod-wrap">
+        <img src="assets/pod.png" alt="KSND Lab adaptive reconstruction unit — a glowing gold and black containment pod">
+      </div>
+      <a href="#" class="enter-btn">ENTER THE SYSTEM <span class="arrow">&#8594;</span></a>
+      <p class="awaiting">AWAITING INPUT<span class="blink">_</span></p>
+    </div>
+
+    <div class="right-col">
+      <div class="infinity-row">
+        <span>&#8734;</span>
+        <span class="slash">/</span>
+        <span class="grey-inf">&#8734;</span>
+      </div>
+      <div class="rule"></div>
+      <div>
+        <p class="mission-label">MISSION</p>
+        <p class="mission-text">BUILD. TEST.<br>LEARN. REPEAT.</p>
+      </div>
+      <div class="dashes">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
