@@ -367,6 +367,7 @@
     width:100%;
     max-width:420px;
     z-index:2;
+    isolation:isolate;
   }
 
   .pod-wrap::before{
@@ -385,8 +386,62 @@
   .pod-wrap img{
     width:100%;
     display:block;
-    filter: drop-shadow(0 30px 60px rgba(0,0,0,.7));
+
+    /* PASS 03 — make the supplied pod artwork behave like illuminated
+       hardware inside the scene instead of a rectangular image. */
+    mix-blend-mode: lighten;
+    opacity:.97;
+    filter:
+      contrast(1.10)
+      brightness(.88)
+      saturate(.88)
+      sepia(.08)
+      drop-shadow(0 26px 52px rgba(0,0,0,.86))
+      drop-shadow(0 0 22px rgba(212,162,78,.08));
+
+    /* Feather the artwork into the environment so its rectangular canvas
+       disappears without cutting into the actual pod silhouette. */
+    -webkit-mask-image:
+      radial-gradient(
+        ellipse 72% 73% at 50% 49%,
+        #000 0%,
+        #000 57%,
+        rgba(0,0,0,.92) 66%,
+        rgba(0,0,0,.55) 75%,
+        transparent 91%
+      );
+    mask-image:
+      radial-gradient(
+        ellipse 72% 73% at 50% 49%,
+        #000 0%,
+        #000 57%,
+        rgba(0,0,0,.92) 66%,
+        rgba(0,0,0,.55) 75%,
+        transparent 91%
+      );
+
     animation: float 6s ease-in-out infinite;
+  }
+
+  /* Localized environmental light wraps around the pod's perimeter. */
+  .pod-wrap::after{
+    content:"";
+    position:absolute;
+    left:9%;
+    right:9%;
+    top:5%;
+    bottom:4%;
+    z-index:-1;
+    pointer-events:none;
+    background:
+      radial-gradient(ellipse at 50% 32%,
+        rgba(240,198,117,.055) 0%,
+        transparent 34%),
+      radial-gradient(ellipse at 50% 72%,
+        rgba(194,124,31,.045) 0%,
+        transparent 42%);
+    filter:blur(18px);
+    opacity:.9;
   }
   @keyframes float{
     0%,100%{ transform: translateY(0px); }
