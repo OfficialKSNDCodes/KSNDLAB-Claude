@@ -36,11 +36,11 @@
   .atmosphere{
     position:fixed; inset:0;
     background:
-      radial-gradient(ellipse 620px 560px at 50% 43%,
-        rgba(137,88,22,.105) 0%,
-        rgba(63,39,10,.045) 36%,
-        rgba(10,7,3,.012) 58%,
-        transparent 73%),
+      radial-gradient(ellipse 560px 620px at 50% 43%,
+        rgba(150,94,24,.115) 0%,
+        rgba(67,41,10,.048) 34%,
+        rgba(10,7,3,.010) 58%,
+        transparent 74%),
       radial-gradient(ellipse 1050px 300px at 50% 102%,
         rgba(126,76,16,.075) 0%,
         transparent 68%),
@@ -48,6 +48,27 @@
     pointer-events:none;
     z-index:0;
   }
+
+  .atmosphere::before,
+  .atmosphere::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:22vw;
+    opacity:.22;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 14%,
+        rgba(212,162,78,.018) 14.1%,
+        transparent 14.3% 31%),
+      linear-gradient(180deg,transparent,rgba(212,162,78,.022) 50%,transparent);
+    pointer-events:none;
+  }
+
+  .atmosphere::before{ left:0; }
+  .atmosphere::after{ right:0; }
 
   /* Distant machine light: sparse, asymmetric, heavily buried in black. */
   .distant-lights{
@@ -355,13 +376,138 @@
     box-shadow: 0 0 10px rgba(240,198,117,.35);
   }
 
-  /* ===== Center pod ===== */
+  /* ===== Center pod / physical containment bay ===== */
   .center-col{
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
+    position:relative;
   }
+
+  .pod-bay{
+    position:relative;
+    width:min(470px, 100%);
+    min-height:560px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    isolation:isolate;
+  }
+
+  /* A dark service ceiling gives the pod something physical to hang from. */
+  .bay-ceiling{
+    position:absolute;
+    z-index:0;
+    top:1.5%;
+    left:7%;
+    right:7%;
+    height:72px;
+    border-radius:48% 48% 12px 12px;
+    background:
+      linear-gradient(180deg,
+        rgba(7,5,2,.96),
+        rgba(20,13,4,.72) 52%,
+        rgba(0,0,0,.98));
+    border:1px solid rgba(212,162,78,.09);
+    box-shadow:
+      inset 0 -12px 24px rgba(240,198,117,.025),
+      0 24px 45px rgba(0,0,0,.88);
+  }
+
+  .bay-ceiling::after{
+    content:"";
+    position:absolute;
+    left:17%;
+    right:17%;
+    bottom:-3px;
+    height:2px;
+    background:linear-gradient(90deg,
+      transparent,
+      rgba(240,198,117,.28) 22%,
+      rgba(240,198,117,.12) 50%,
+      rgba(240,198,117,.28) 78%,
+      transparent);
+    filter:blur(.3px);
+  }
+
+  /* Thin service rails: visible only where the amber light catches them. */
+  .bay-rail{
+    position:absolute;
+    z-index:1;
+    top:12%;
+    bottom:12%;
+    width:13px;
+    border-left:1px solid rgba(212,162,78,.075);
+    border-right:1px solid rgba(212,162,78,.035);
+    background:
+      linear-gradient(180deg,
+        rgba(255,220,150,.045),
+        transparent 18% 82%,
+        rgba(255,220,150,.035));
+    box-shadow:
+      inset 0 0 10px rgba(212,162,78,.018),
+      0 0 18px rgba(0,0,0,.88);
+  }
+
+  .bay-rail::before,
+  .bay-rail::after{
+    content:"";
+    position:absolute;
+    left:-5px;
+    width:21px;
+    height:6px;
+    border:1px solid rgba(212,162,78,.07);
+    background:rgba(4,3,1,.86);
+  }
+
+  .bay-rail::before{ top:18%; }
+  .bay-rail::after{ bottom:21%; }
+
+  .bay-rail-left{ left:11%; }
+  .bay-rail-right{ right:11%; }
+
+  /* Chunkier mechanical struts give the chamber scale without becoming UI panels. */
+  .bay-strut{
+    position:absolute;
+    z-index:0;
+    top:16%;
+    bottom:15%;
+    width:30px;
+    border-radius:5px;
+    background:
+      linear-gradient(90deg,
+        rgba(0,0,0,.98),
+        rgba(31,20,7,.42) 44%,
+        rgba(0,0,0,.96));
+    border:1px solid rgba(212,162,78,.035);
+    box-shadow:
+      inset 0 0 16px rgba(240,198,117,.018),
+      0 0 35px rgba(0,0,0,.92);
+  }
+
+  .bay-strut-left{ left:5%; transform:skewY(1.5deg); }
+  .bay-strut-right{ right:5%; transform:skewY(-1.5deg); }
+
+  .bay-floor{
+    position:absolute;
+    z-index:0;
+    left:8%;
+    right:8%;
+    bottom:3%;
+    height:76px;
+    border-radius:50%;
+    background:
+      radial-gradient(ellipse at center,
+        rgba(240,198,117,.11) 0%,
+        rgba(194,124,31,.045) 28%,
+        rgba(0,0,0,.70) 68%,
+        transparent 76%);
+    box-shadow:
+      0 -10px 32px rgba(240,198,117,.025);
+    filter:blur(2px);
+  }
+
   .pod-wrap{
     position:relative;
     width:100%;
@@ -370,86 +516,75 @@
     isolation:isolate;
   }
 
-  .pod-wrap::before{
-    content:"";
-    position:absolute;
-    left:50%;
-    top:12%;
-    width:72%;
-    height:72%;
-    transform:translateX(-50%);
-    background:radial-gradient(ellipse, rgba(240,198,117,.075), rgba(130,78,16,.018) 42%, transparent 70%);
-    filter:blur(30px);
-    z-index:-1;
-    pointer-events:none;
-  }
+  /* The image becomes a luminous object: its black canvas visually disappears. */
   .pod-wrap img{
     width:100%;
     display:block;
-
-    /* PASS 03 — make the supplied pod artwork behave like illuminated
-       hardware inside the scene instead of a rectangular image. */
-    mix-blend-mode: lighten;
-    opacity:.97;
+    mix-blend-mode:screen;
+    opacity:.985;
     filter:
-      contrast(1.10)
-      brightness(.88)
-      saturate(.88)
-      sepia(.08)
-      drop-shadow(0 26px 52px rgba(0,0,0,.86))
-      drop-shadow(0 0 22px rgba(212,162,78,.08));
-
-    /* Feather the artwork into the environment so its rectangular canvas
-       disappears without cutting into the actual pod silhouette. */
+      contrast(1.13)
+      brightness(.86)
+      saturate(.90)
+      drop-shadow(0 34px 55px rgba(0,0,0,.92))
+      drop-shadow(0 0 18px rgba(212,162,78,.09));
     -webkit-mask-image:
-      radial-gradient(
-        ellipse 72% 73% at 50% 49%,
-        #000 0%,
-        #000 57%,
-        rgba(0,0,0,.92) 66%,
-        rgba(0,0,0,.55) 75%,
-        transparent 91%
-      );
+      linear-gradient(to bottom,
+        transparent 0%,
+        #000 4%,
+        #000 94%,
+        transparent 100%);
     mask-image:
-      radial-gradient(
-        ellipse 72% 73% at 50% 49%,
-        #000 0%,
-        #000 57%,
-        rgba(0,0,0,.92) 66%,
-        rgba(0,0,0,.55) 75%,
-        transparent 91%
-      );
-
-    animation: float 6s ease-in-out infinite;
+      linear-gradient(to bottom,
+        transparent 0%,
+        #000 4%,
+        #000 94%,
+        transparent 100%);
+    animation:float 6s ease-in-out infinite;
   }
 
-  /* Localized environmental light wraps around the pod's perimeter. */
+  /* Local bloom sits behind the pod, never over the pod. */
+  .pod-wrap::before{
+    content:"";
+    position:absolute;
+    z-index:-2;
+    left:15%;
+    right:15%;
+    top:8%;
+    bottom:7%;
+    background:
+      radial-gradient(ellipse at 50% 38%,
+        rgba(240,198,117,.065),
+        transparent 47%),
+      radial-gradient(ellipse at 50% 82%,
+        rgba(194,124,31,.055),
+        transparent 52%);
+    filter:blur(26px);
+    pointer-events:none;
+  }
+
   .pod-wrap::after{
     content:"";
     position:absolute;
-    left:9%;
-    right:9%;
-    top:5%;
-    bottom:4%;
     z-index:-1;
-    pointer-events:none;
-    background:
-      radial-gradient(ellipse at 50% 32%,
-        rgba(240,198,117,.055) 0%,
-        transparent 34%),
-      radial-gradient(ellipse at 50% 72%,
-        rgba(194,124,31,.045) 0%,
-        transparent 42%);
+    left:22%;
+    right:22%;
+    bottom:5%;
+    height:18%;
+    background:radial-gradient(ellipse,
+      rgba(240,198,117,.11),
+      transparent 72%);
     filter:blur(18px);
-    opacity:.9;
+    pointer-events:none;
   }
+
   @keyframes float{
-    0%,100%{ transform: translateY(0px); }
-    50%{ transform: translateY(-8px); }
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-5px); }
   }
 
   .enter-btn{
-    margin-top: 18px;
+    margin-top: -1px;
     width:100%;
     max-width:420px;
     background: rgba(212,162,78,.04);
@@ -469,8 +604,9 @@
     text-align:center;
     transition: all .3s ease;
     box-shadow:
-      inset 0 0 20px rgba(212,162,78,.05),
-      0 18px 50px rgba(0,0,0,.55);
+      inset 0 0 20px rgba(212,162,78,.045),
+      0 -8px 24px rgba(240,198,117,.018),
+      0 22px 55px rgba(0,0,0,.70);
   }
   .enter-btn:hover{
     background: rgba(212,162,78,.1);
@@ -560,6 +696,16 @@
 
   /* ===== Responsive ===== */
   @media (max-width: 900px){
+    .pod-bay{
+      width:min(430px,94vw);
+      min-height:520px;
+    }
+    .bay-strut-left{ left:2%; }
+    .bay-strut-right{ right:2%; }
+    .bay-rail-left{ left:8%; }
+    .bay-rail-right{ right:8%; }
+
+
     .stage{
       grid-template-columns: 1fr;
       padding-top: 140px;
@@ -632,8 +778,17 @@
     </div>
 
     <div class="center-col">
-      <div class="pod-wrap">
-        <img src="assets/pod.png" alt="KSND Lab adaptive reconstruction unit — a glowing gold and black containment pod">
+      <div class="pod-bay">
+        <div class="bay-ceiling" aria-hidden="true"></div>
+        <div class="bay-rail bay-rail-left" aria-hidden="true"></div>
+        <div class="bay-rail bay-rail-right" aria-hidden="true"></div>
+        <div class="bay-strut bay-strut-left" aria-hidden="true"></div>
+        <div class="bay-strut bay-strut-right" aria-hidden="true"></div>
+        <div class="bay-floor" aria-hidden="true"></div>
+
+        <div class="pod-wrap">
+          <img src="assets/pod.png" alt="KSND Lab adaptive reconstruction unit — a glowing gold and black containment pod">
+        </div>
       </div>
       <a href="#" class="enter-btn">ENTER THE SYSTEM <span class="arrow">&#8594;</span></a>
       <p class="awaiting">AWAITING INPUT<span class="blink">_</span></p>
