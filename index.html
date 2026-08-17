@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSND Lab — System Active</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+  :root{
+    --gold: #d4a24e;
+    --gold-bright: #f0c675;
+    --bg: #000000;
+    --bg2: #0a0806;
+    --text-dim: #7a7268;
+    --text-dimmer: #4a453d;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    background: #000;
+    color: #e8e0d0;
+    font-family: var(--font-body);
+    height:100%;
+    overflow-x:hidden;
+  }
+
+  /* ===== KSND LAB ENVIRONMENT — PASS 02 =====
+     Subtraction pass: architecture is sensed, not displayed.
+     Priority: black -> gold -> pod -> UI -> environment.
+  */
+  .atmosphere{
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 560px 620px at 50% 43%,
+        rgba(150,94,24,.115) 0%,
+        rgba(67,41,10,.048) 34%,
+        rgba(10,7,3,.010) 58%,
+        transparent 74%),
+      radial-gradient(ellipse 1050px 300px at 50% 102%,
+        rgba(126,76,16,.075) 0%,
+        transparent 68%),
+      linear-gradient(180deg,#010100 0%,#020100 47%,#000 100%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .atmosphere::before,
+  .atmosphere::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:22vw;
+    opacity:.22;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 14%,
+        rgba(212,162,78,.018) 14.1%,
+        transparent 14.3% 31%),
+      linear-gradient(180deg,transparent,rgba(212,162,78,.022) 50%,transparent);
+    pointer-events:none;
+  }
+
+  .atmosphere::before{ left:0; }
+  .atmosphere::after{ right:0; }
+
+  /* Distant machine light: sparse, asymmetric, heavily buried in black. */
+  .distant-lights{
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 70px 2px at 10% 31%, rgba(240,198,117,.12), transparent 72%),
+      radial-gradient(ellipse 105px 2px at 91% 25%, rgba(240,198,117,.13), transparent 72%),
+      radial-gradient(ellipse 48px 2px at 17% 68%, rgba(240,198,117,.07), transparent 75%),
+      radial-gradient(ellipse 76px 2px at 87% 72%, rgba(240,198,117,.065), transparent 75%),
+      radial-gradient(2px 2px at 86% 20%, rgba(240,198,117,.55), transparent),
+      radial-gradient(1px 1px at 93% 34%, rgba(240,198,117,.34), transparent),
+      radial-gradient(1px 1px at 13% 43%, rgba(240,198,117,.22), transparent),
+      linear-gradient(90deg, transparent 0 11%, rgba(212,162,78,.014) 11.1%, transparent 11.3% 88.7%, rgba(212,162,78,.014) 88.9%, transparent 89.1%),
+      linear-gradient(180deg, transparent 0 21%, rgba(212,162,78,.018) 21.1%, transparent 21.25% 77%, rgba(212,162,78,.012) 77.1%, transparent 77.25%);
+    opacity:.75;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Dust is nearly imperceptible outside the pod. */
+  .stars{
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 18% 34%, rgba(212,162,78,.13), transparent),
+      radial-gradient(1px 1px at 75% 62%, rgba(212,162,78,.10), transparent),
+      radial-gradient(1px 1px at 37% 76%, rgba(212,162,78,.09), transparent),
+      radial-gradient(1px 1px at 64% 18%, rgba(212,162,78,.08), transparent);
+    background-size:620px 620px;
+    background-repeat:repeat;
+    opacity:.28;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Very soft shafts only around the central apparatus. */
+  .beams{
+    position:fixed; inset:-8%;
+    background:
+      linear-gradient(79deg, transparent 0 37%, rgba(212,162,78,.022) 40%, transparent 44%),
+      linear-gradient(101deg, transparent 0 56%, rgba(212,162,78,.020) 60%, transparent 64%),
+      radial-gradient(ellipse 310px 660px at 50% 44%, rgba(240,198,117,.025), transparent 70%);
+    -webkit-mask-image:radial-gradient(ellipse 48% 72% at 50% 45%, black 0%, rgba(0,0,0,.62) 48%, transparent 84%);
+    mask-image:radial-gradient(ellipse 48% 72% at 50% 45%, black 0%, rgba(0,0,0,.62) 48%, transparent 84%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .vignette{
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 55% 63% at 50% 43%,
+        transparent 0%,
+        transparent 36%,
+        rgba(0,0,0,.30) 63%,
+        rgba(0,0,0,.80) 88%,
+        rgba(0,0,0,.94) 100%),
+      linear-gradient(90deg,rgba(0,0,0,.58),transparent 23%,transparent 77%,rgba(0,0,0,.58)),
+      linear-gradient(180deg,rgba(0,0,0,.34),transparent 22%,transparent 73%,rgba(0,0,0,.70));
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Industrial floor: broad metal panels, not a luminous grid. */
+  .floor{
+    position:fixed;
+    left:-8%; right:-8%; bottom:-1vh;
+    height:27vh;
+    pointer-events:none;
+    z-index:0;
+    transform:perspective(760px) rotateX(61deg);
+    transform-origin:center bottom;
+    background:
+      /* major longitudinal seams */
+      linear-gradient(90deg,
+        transparent 0 22%,
+        rgba(212,162,78,.060) 22.08%,
+        transparent 22.18% 38%,
+        rgba(212,162,78,.035) 38.08%,
+        transparent 38.18% 61.82%,
+        rgba(212,162,78,.035) 61.92%,
+        transparent 62.02% 77.82%,
+        rgba(212,162,78,.060) 77.92%,
+        transparent 78.02%),
+      /* sparse transverse plate joints */
+      linear-gradient(0deg,
+        transparent 0 18%,
+        rgba(212,162,78,.045) 18.25%,
+        transparent 18.55% 43%,
+        rgba(212,162,78,.035) 43.2%,
+        transparent 43.5% 68%,
+        rgba(212,162,78,.026) 68.2%,
+        transparent 68.5%),
+      linear-gradient(180deg,rgba(35,25,12,.025),rgba(0,0,0,.30));
+    -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.86) 0%,rgba(0,0,0,.48) 42%,transparent 94%);
+    mask-image:linear-gradient(to top,rgba(0,0,0,.86) 0%,rgba(0,0,0,.48) 42%,transparent 94%);
+    opacity:.72;
+  }
+
+  /* Molten reflection directly beneath the apparatus. */
+  .floor-glow{
+    position:fixed;
+    left:50%; bottom:-7vh;
+    width:min(900px,72vw);
+    height:300px;
+    transform:translateX(-50%);
+    background:
+      radial-gradient(ellipse 34% 65% at 50% 100%,
+        rgba(240,198,117,.145) 0%,
+        rgba(194,124,31,.055) 35%,
+        rgba(100,58,10,.018) 55%,
+        transparent 75%);
+    filter:blur(5px);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Architecture now lives in shadow. It should be discovered, not read. */
+  .lab-architecture{
+    position:fixed; inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+    opacity:.28;
+  }
+
+  .arch{
+    position:absolute;
+    display:block;
+    background:
+      linear-gradient(90deg,
+        rgba(240,198,117,.025),
+        rgba(5,4,2,.34) 17%,
+        rgba(0,0,0,.82) 50%,
+        rgba(5,4,2,.34) 83%,
+        rgba(240,198,117,.018));
+    border:1px solid rgba(212,162,78,.032);
+    box-shadow:
+      inset 0 0 30px rgba(212,162,78,.012),
+      0 0 50px rgba(0,0,0,.92);
+  }
+
+  .arch-left{
+    width:4.2vw; min-width:34px; height:65vh;
+    left:15.5vw; top:20vh;
+    transform:perspective(900px) rotateY(12deg);
+  }
+
+  .arch-right{
+    width:4.2vw; min-width:34px; height:65vh;
+    right:15.5vw; top:20vh;
+    transform:perspective(900px) rotateY(-12deg);
+  }
+
+  .arch-top{
+    width:39vw; height:4.8vh;
+    left:30.5vw; top:13vh;
+    border-radius:3px 3px 46% 46%;
+    opacity:.52;
+  }
+
+  .arch-back{
+    width:48vw; height:52vh;
+    left:26vw; top:24vh;
+    border-color:rgba(212,162,78,.018);
+    background:
+      linear-gradient(90deg,transparent,rgba(212,162,78,.018),transparent),
+      linear-gradient(180deg,transparent 0 49.8%,rgba(212,162,78,.018) 50%,transparent 50.2%);
+    box-shadow:none;
+    opacity:.44;
+  }
+
+  .fixture{
+    position:absolute;
+    width:9vw; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(240,198,117,.12),transparent);
+    filter:blur(.45px);
+    opacity:.7;
+  }
+
+  .fixture-left{
+    left:4vw; top:36vh;
+    transform:rotate(-7deg);
+  }
+
+  .fixture-right{
+    right:4vw; top:33vh;
+    transform:rotate(7deg);
+  }
+
+  /* subtle grain to break up flat gradients */
+  .grain{
+    position:fixed; inset:0;
+    opacity:.026;
+    pointer-events:none;
+    z-index:1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .stage{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    display:grid;
+    grid-template-columns: 1fr minmax(280px, 420px) 1fr;
+    align-items:center;
+    padding: 40px 5vw 60px;
+    gap: 24px;
+  }
+
+  /* ===== Top labels ===== */
+  .topleft{
+    position:absolute; top:40px; left:5vw;
+  }
+  .brand-mark{
+    font-family: var(--font-display);
+    font-size:24px; letter-spacing:10px; font-weight:700; color:#f2ead9;
+    margin:0 0 8px 0;
+  }
+  .brand-mark .dots{ color: var(--text-dimmer); letter-spacing:6px; }
+  .brand-sub{
+    font-size:12px; letter-spacing:3px; font-weight:600; color: var(--text-dim);
+  }
+
+  .topright{
+    position:absolute; top:44px; right:5vw;
+    display:flex; align-items:center; gap:10px;
+    font-size:11px; letter-spacing:3px; color: var(--text-dim);
+  }
+  .status-dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 8px 2px rgba(240,198,117,.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:.35; }
+  }
+
+  /* ===== Left info column ===== */
+  .left-col{
+    position:relative;
+    padding-top: 40px;
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:2px;
+    color: var(--text-dim);
+  }
+  .left-col .field-label{
+    display:block;
+    color: var(--text-dimmer);
+    margin-bottom:6px;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:3px;
+  }
+  .left-col .field-value{
+    color:#eee3cc;
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:2px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .left-col .field-value.active::before,
+  .left-col .field-value.system::before{
+    content:"";
+    width:6px; height:6px; border-radius:50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 6px 1px rgba(240,198,117,.7);
+  }
+  .glyph{
+    margin-top:20px;
+    width:34px; height:34px;
+    border:1px solid var(--text-dimmer);
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(0deg);
+    color: var(--text-dim);
+    font-size:14px;
+  }
+  .socials{
+    position:absolute;
+    bottom:-260px;
+    left:0;
+    display:flex;
+    gap:18px;
+  }
+  .socials a{
+    color: var(--text-dim);
+    text-decoration:none;
+    font-size:14px;
+    border:1px solid var(--text-dimmer);
+    width:30px; height:30px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    transition: all .25s ease;
+  }
+  .socials a:hover{
+    color: var(--gold-bright);
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 10px rgba(240,198,117,.35);
+  }
+
+  /* ===== Center pod / physical containment bay ===== */
+  .center-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+
+  .pod-bay{
+    position:relative;
+    width:min(470px, 100%);
+    min-height:560px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    isolation:isolate;
+  }
+
+  /* A dark service ceiling gives the pod something physical to hang from. */
+  .bay-ceiling{
+    position:absolute;
+    z-index:0;
+    top:1.5%;
+    left:7%;
+    right:7%;
+    height:72px;
+    border-radius:48% 48% 12px 12px;
+    background:
+      linear-gradient(180deg,
+        rgba(7,5,2,.96),
+        rgba(20,13,4,.72) 52%,
+        rgba(0,0,0,.98));
+    border:1px solid rgba(212,162,78,.09);
+    box-shadow:
+      inset 0 -12px 24px rgba(240,198,117,.025),
+      0 24px 45px rgba(0,0,0,.88);
+  }
+
+  .bay-ceiling::after{
+    content:"";
+    position:absolute;
+    left:17%;
+    right:17%;
+    bottom:-3px;
+    height:2px;
+    background:linear-gradient(90deg,
+      transparent,
+      rgba(240,198,117,.28) 22%,
+      rgba(240,198,117,.12) 50%,
+      rgba(240,198,117,.28) 78%,
+      transparent);
+    filter:blur(.3px);
+  }
+
+  /* Thin service rails: visible only where the amber light catches them. */
+  .bay-rail{
+    position:absolute;
+    z-index:1;
+    top:12%;
+    bottom:12%;
+    width:13px;
+    border-left:1px solid rgba(212,162,78,.075);
+    border-right:1px solid rgba(212,162,78,.035);
+    background:
+      linear-gradient(180deg,
+        rgba(255,220,150,.045),
+        transparent 18% 82%,
+        rgba(255,220,150,.035));
+    box-shadow:
+      inset 0 0 10px rgba(212,162,78,.018),
+      0 0 18px rgba(0,0,0,.88);
+  }
+
+  .bay-rail::before,
+  .bay-rail::after{
+    content:"";
+    position:absolute;
+    left:-5px;
+    width:21px;
+    height:6px;
+    border:1px solid rgba(212,162,78,.07);
+    background:rgba(4,3,1,.86);
+  }
+
+  .bay-rail::before{ top:18%; }
+  .bay-rail::after{ bottom:21%; }
+
+  .bay-rail-left{ left:11%; }
+  .bay-rail-right{ right:11%; }
+
+  /* Chunkier mechanical struts give the chamber scale without becoming UI panels. */
+  .bay-strut{
+    position:absolute;
+    z-index:0;
+    top:16%;
+    bottom:15%;
+    width:30px;
+    border-radius:5px;
+    background:
+      linear-gradient(90deg,
+        rgba(0,0,0,.98),
+        rgba(31,20,7,.42) 44%,
+        rgba(0,0,0,.96));
+    border:1px solid rgba(212,162,78,.035);
+    box-shadow:
+      inset 0 0 16px rgba(240,198,117,.018),
+      0 0 35px rgba(0,0,0,.92);
+  }
+
+  .bay-strut-left{ left:5%; transform:skewY(1.5deg); }
+  .bay-strut-right{ right:5%; transform:skewY(-1.5deg); }
+
+  .bay-floor{
+    position:absolute;
+    z-index:0;
+    left:8%;
+    right:8%;
+    bottom:3%;
+    height:76px;
+    border-radius:50%;
+    background:
+      radial-gradient(ellipse at center,
+        rgba(240,198,117,.11) 0%,
+        rgba(194,124,31,.045) 28%,
+        rgba(0,0,0,.70) 68%,
+        transparent 76%);
+    box-shadow:
+      0 -10px 32px rgba(240,198,117,.025);
+    filter:blur(2px);
+  }
+
+  /* ===== PASS 05 — central machine / codable pod fallback ===== */
+  .pod-fallback{
+    position:absolute;
+    z-index:1;
+    left:50%;
+    top:5%;
+    width:67%;
+    height:86%;
+    transform:translateX(-50%);
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .pod-fallback-active .pod-fallback{
+    opacity:1;
+  }
+
+  /* Circular upper gantry, matching the new art direction. */
+  .bay-ceiling{
+    height:58px;
+    left:2%;
+    right:2%;
+    top:1%;
+    border-radius:50%;
+    background:
+      radial-gradient(ellipse at center,
+        transparent 0 57%,
+        rgba(240,198,117,.055) 58% 59%,
+        rgba(4,3,1,.98) 60% 82%,
+        transparent 83%);
+    border:0;
+    box-shadow:none;
+  }
+
+  .bay-ceiling::before{
+    content:"";
+    position:absolute;
+    inset:-24px 12%;
+    border:1px solid rgba(212,162,78,.065);
+    border-radius:50%;
+    box-shadow:
+      inset 0 0 18px rgba(212,162,78,.025),
+      0 0 30px rgba(212,162,78,.025);
+  }
+
+  .bay-ceiling::after{
+    left:23%;
+    right:23%;
+    bottom:27px;
+    height:2px;
+    background:linear-gradient(90deg,transparent,rgba(240,198,117,.32),transparent);
+  }
+
+  .bay-rail{
+    top:10%;
+    bottom:7%;
+    width:10px;
+  }
+
+  .bay-rail-left{ left:13%; }
+  .bay-rail-right{ right:13%; }
+
+  .bay-strut{
+    top:7%;
+    bottom:5%;
+    width:34px;
+    border-radius:12px;
+    background:
+      linear-gradient(90deg,
+        #000 0%,
+        rgba(42,27,8,.72) 28%,
+        rgba(12,9,3,.96) 55%,
+        rgba(52,33,9,.52) 75%,
+        #000 100%);
+  }
+
+  .bay-strut-left{ left:4%; }
+  .bay-strut-right{ right:4%; }
+
+  /* Mechanical couplers on the struts. */
+  .bay-strut::before,
+  .bay-strut::after{
+    content:"";
+    position:absolute;
+    left:-5px;
+    right:-5px;
+    height:32px;
+    border:1px solid rgba(212,162,78,.07);
+    border-radius:5px;
+    background:
+      linear-gradient(180deg,
+        rgba(240,198,117,.06),
+        rgba(0,0,0,.9));
+    box-shadow:0 0 14px rgba(0,0,0,.75);
+  }
+
+  .bay-strut::before{ top:19%; }
+  .bay-strut::after{ bottom:22%; }
+
+  .fallback-top{
+    position:absolute;
+    left:4%;
+    right:4%;
+    top:2%;
+    height:18%;
+    z-index:4;
+    border-radius:22px 22px 10px 10px;
+    border:1px solid rgba(212,162,78,.17);
+    background:
+      linear-gradient(180deg,
+        rgba(24,16,5,.98),
+        rgba(5,4,2,.98));
+    box-shadow:
+      inset 0 -12px 18px rgba(240,198,117,.025),
+      0 12px 28px rgba(0,0,0,.8);
+    padding:13px 16px;
+    color:rgba(240,198,117,.8);
+    font-family:var(--font-body);
+    letter-spacing:1.5px;
+  }
+
+  .fallback-top span{
+    display:block;
+    font-family:var(--font-display);
+    font-size:10px;
+    letter-spacing:1.8px;
+  }
+
+  .fallback-top small{
+    display:block;
+    margin-top:4px;
+    font-size:7px;
+    line-height:1.45;
+    opacity:.72;
+  }
+
+  .fallback-top b{
+    position:absolute;
+    right:15px;
+    top:17px;
+    font-size:20px;
+    font-weight:400;
+  }
+
+  .fallback-glass{
+    position:absolute;
+    left:14%;
+    right:14%;
+    top:18%;
+    bottom:8%;
+    border-left:1px solid rgba(240,198,117,.34);
+    border-right:1px solid rgba(240,198,117,.34);
+    border-radius:28px 28px 20px 20px;
+    background:
+      radial-gradient(ellipse at 50% 82%,
+        rgba(240,198,117,.10),
+        transparent 42%),
+      linear-gradient(90deg,
+        rgba(240,198,117,.025),
+        rgba(0,0,0,.52) 18%,
+        rgba(0,0,0,.82) 50%,
+        rgba(0,0,0,.52) 82%,
+        rgba(240,198,117,.025));
+    box-shadow:
+      inset 0 0 30px rgba(240,198,117,.035),
+      0 0 24px rgba(240,198,117,.035);
+    overflow:hidden;
+  }
+
+  .fallback-glass::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    background:
+      linear-gradient(90deg,
+        rgba(255,255,255,.08),
+        transparent 9% 91%,
+        rgba(255,255,255,.055));
+    opacity:.45;
+  }
+
+  .fallback-ring{
+    position:absolute;
+    left:50%;
+    width:92%;
+    height:44px;
+    transform:translateX(-50%);
+    border:2px solid rgba(240,198,117,.82);
+    border-radius:50%;
+    box-shadow:
+      0 0 10px rgba(240,198,117,.35),
+      inset 0 0 9px rgba(240,198,117,.18);
+  }
+
+  .fallback-ring-top{ top:-23px; }
+  .fallback-ring-bottom{ bottom:-23px; }
+
+  .fallback-particles{
+    position:absolute;
+    inset:0;
+    opacity:.45;
+    background-image:
+      radial-gradient(1px 1px at 21% 24%, rgba(240,198,117,.7), transparent),
+      radial-gradient(1px 1px at 67% 17%, rgba(240,198,117,.6), transparent),
+      radial-gradient(1px 1px at 39% 49%, rgba(240,198,117,.65), transparent),
+      radial-gradient(1px 1px at 74% 63%, rgba(240,198,117,.5), transparent),
+      radial-gradient(1px 1px at 30% 78%, rgba(240,198,117,.5), transparent),
+      radial-gradient(1px 1px at 82% 86%, rgba(240,198,117,.55), transparent);
+    background-size:150px 170px;
+  }
+
+  .fallback-logo{
+    position:absolute;
+    left:50%;
+    top:47%;
+    transform:translate(-50%,-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:#e9b95e;
+    text-shadow:0 0 14px rgba(240,198,117,.22);
+  }
+
+  .fallback-mark{
+    font-size:74px;
+    line-height:.8;
+    font-family:Georgia,serif;
+    transform:scaleX(.88);
+  }
+
+  .fallback-logo strong{
+    margin-top:10px;
+    font-family:Georgia,serif;
+    font-size:38px;
+    letter-spacing:1px;
+  }
+
+  .fallback-logo span{
+    margin-top:2px;
+    font-family:var(--font-display);
+    font-size:13px;
+    letter-spacing:7px;
+    margin-left:7px;
+  }
+
+  .fallback-base{
+    position:absolute;
+    left:7%;
+    right:7%;
+    bottom:1%;
+    height:15%;
+    border-radius:50%;
+    border:1px solid rgba(212,162,78,.14);
+    background:
+      radial-gradient(ellipse at center,
+        rgba(240,198,117,.12) 0%,
+        rgba(24,15,4,.82) 42%,
+        rgba(0,0,0,.98) 70%);
+    box-shadow:
+      0 -8px 22px rgba(240,198,117,.04),
+      0 18px 35px rgba(0,0,0,.9);
+  }
+
+  .fallback-base::before{
+    content:"";
+    position:absolute;
+    left:13%;
+    right:13%;
+    top:14%;
+    height:28%;
+    border:1px solid rgba(240,198,117,.34);
+    border-radius:50%;
+  }
+
+  /* If the real asset loads, keep it dominant but let the machine frame it. */
+  .pod-wrap:not(.pod-fallback-active) .pod-fallback{
+    display:none;
+  }
+
+  .pod-wrap:not(.pod-fallback-active) img{
+    position:relative;
+    z-index:5;
+  }
+
+  .pod-wrap{
+    position:relative;
+    width:100%;
+    max-width:420px;
+    z-index:2;
+    isolation:isolate;
+  }
+
+  /* The image becomes a luminous object: its black canvas visually disappears. */
+  .pod-wrap img{
+    width:100%;
+    display:block;
+    mix-blend-mode:screen;
+    opacity:.985;
+    filter:
+      contrast(1.13)
+      brightness(.86)
+      saturate(.90)
+      drop-shadow(0 34px 55px rgba(0,0,0,.92))
+      drop-shadow(0 0 18px rgba(212,162,78,.09));
+    -webkit-mask-image:
+      radial-gradient(ellipse 74% 78% at 50% 49%,
+        #000 0%,
+        #000 64%,
+        rgba(0,0,0,.88) 73%,
+        transparent 94%);
+    mask-image:
+      radial-gradient(ellipse 74% 78% at 50% 49%,
+        #000 0%,
+        #000 64%,
+        rgba(0,0,0,.88) 73%,
+        transparent 94%);
+    animation:float 6s ease-in-out infinite;
+  }
+
+  /* Local bloom sits behind the pod, never over the pod. */
+  .pod-wrap::before{
+    content:"";
+    position:absolute;
+    z-index:-2;
+    left:15%;
+    right:15%;
+    top:8%;
+    bottom:7%;
+    background:
+      radial-gradient(ellipse at 50% 38%,
+        rgba(240,198,117,.065),
+        transparent 47%),
+      radial-gradient(ellipse at 50% 82%,
+        rgba(194,124,31,.055),
+        transparent 52%);
+    filter:blur(26px);
+    pointer-events:none;
+  }
+
+  .pod-wrap::after{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    left:22%;
+    right:22%;
+    bottom:5%;
+    height:18%;
+    background:radial-gradient(ellipse,
+      rgba(240,198,117,.11),
+      transparent 72%);
+    filter:blur(18px);
+    pointer-events:none;
+  }
+
+  @keyframes float{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-5px); }
+  }
+
+  .enter-btn{
+    margin-top: -8px;
+    width:100%;
+    max-width:420px;
+    background: rgba(212,162,78,.04);
+    border: 1px solid rgba(212,162,78,.55);
+    color: #f2ead9;
+    font-family: var(--font-display);
+    font-weight:600;
+    letter-spacing: 5px;
+    font-size: 13px;
+    padding: 18px 26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    cursor:pointer;
+    text-decoration:none;
+    text-align:center;
+    transition: all .3s ease;
+    box-shadow:
+      inset 0 0 20px rgba(212,162,78,.045),
+      0 -8px 24px rgba(240,198,117,.018),
+      0 22px 55px rgba(0,0,0,.70);
+  }
+  .enter-btn:hover{
+    background: rgba(212,162,78,.1);
+    box-shadow: 0 0 25px rgba(212,162,78,.25), inset 0 0 25px rgba(212,162,78,.1);
+    border-color: var(--gold-bright);
+    letter-spacing:6px;
+  }
+  .enter-btn:focus-visible{
+    outline: 2px solid var(--gold-bright);
+    outline-offset: 4px;
+  }
+  .enter-btn .arrow{ transition: transform .3s ease; }
+  .enter-btn:hover .arrow{ transform: translateX(6px); }
+
+  .awaiting{
+    margin-top:16px;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:4px;
+    color: var(--text-dimmer);
+  }
+  .awaiting .blink{
+    display:inline-block;
+    animation: blink 1.6s steps(1) infinite;
+  }
+  @keyframes blink{
+    50%{ opacity:0; }
+  }
+
+  /* ===== Right column ===== */
+  .right-col{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    text-align:right;
+    gap:8px;
+    padding-top:40px;
+  }
+  .infinity-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:26px;
+    color: var(--gold-bright);
+    letter-spacing:2px;
+  }
+  .infinity-row .slash{
+    color: var(--text-dimmer);
+    font-size:20px;
+  }
+  .infinity-row .grey-inf{
+    color: var(--text-dimmer);
+  }
+  .rule{
+    width:140px;
+    height:1px;
+    background: linear-gradient(to left, rgba(212,162,78,.5), transparent);
+    margin: 8px 0 18px;
+  }
+  .mission-label{
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:3px;
+    color: var(--text-dimmer);
+    margin-bottom:8px;
+  }
+  .mission-text{
+    font-family: var(--font-display);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:#eee3cc;
+    line-height:1.7;
+  }
+  .dashes{
+    margin-top:30px;
+    display:flex;
+    gap:6px;
+  }
+  .dashes span{
+    width:18px; height:2px;
+    background: var(--gold);
+    opacity:.4;
+  }
+  .dashes span:nth-child(1){ opacity:.9; }
+  .dashes span:nth-child(2){ opacity:.6; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px){
+    .pod-bay{
+      width:min(430px,94vw);
+      min-height:520px;
+    }
+    .bay-strut-left{ left:2%; }
+    .bay-strut-right{ right:2%; }
+    .bay-rail-left{ left:8%; }
+    .bay-rail-right{ right:8%; }
+
+
+    .stage{
+      grid-template-columns: 1fr;
+      padding-top: 140px;
+      gap: 50px;
+    }
+    .left-col, .right-col{
+      align-items:center;
+      text-align:center;
+      padding-top:0;
+    }
+    .right-col{ align-items:center; }
+    .rule{ margin-left:auto; margin-right:auto; }
+    .socials{ position:static; margin-top:30px; justify-content:center; }
+    .glyph{ margin-left:auto; margin-right:auto; }
+    .topleft{ left:50%; transform:translateX(-50%); text-align:center; }
+    .topright{ left:50%; right:auto; transform:translateX(-50%); top:16px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="atmosphere"></div>
+  <div class="distant-lights"></div>
+  <div class="stars"></div>
+  <div class="beams"></div>
+  <div class="vignette"></div>
+  <div class="floor"></div>
+  <div class="floor-glow"></div>
+  <div class="lab-architecture" aria-hidden="true">
+    <i class="arch arch-left"></i>
+    <i class="arch arch-right"></i>
+    <i class="arch arch-top"></i>
+    <i class="arch arch-back"></i>
+    <i class="fixture fixture-left"></i>
+    <i class="fixture fixture-right"></i>
+  </div>
+  <div class="grain"></div>
+
+  <div class="topleft">
+    <p class="brand-mark">K S N D <span class="dots">. . . . .</span></p>
+    <p class="brand-sub">RESEARCH &bull; BUILD &bull; SYSTEM ACTIVE</p>
+  </div>
+
+  <div class="topright">
+    <span class="status-dot"></span>
+    <span>SYSTEM STATUS</span>
+  </div>
+
+  <div class="stage">
+    <div class="left-col">
+      <div>
+        <span class="field-label">PROJECT</span>
+        <span class="field-value">KSND LAB</span>
+      </div>
+      <div>
+        <span class="field-label">BUILD MODE</span>
+        <span class="field-value active">DISCOVERY</span>
+      </div>
+      <div>
+        <span class="field-label">SYSTEM</span>
+        <span class="field-value system">ACTIVE</span>
+      </div>
+      <div class="glyph">&#9661;</div>
+
+      <div class="socials">
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="YouTube">YT</a>
+        <a href="#" aria-label="Email">@</a>
+      </div>
+    </div>
+
+    <div class="center-col">
+      <div class="pod-bay">
+        <div class="bay-ceiling" aria-hidden="true"></div>
+        <div class="bay-rail bay-rail-left" aria-hidden="true"></div>
+        <div class="bay-rail bay-rail-right" aria-hidden="true"></div>
+        <div class="bay-strut bay-strut-left" aria-hidden="true"></div>
+        <div class="bay-strut bay-strut-right" aria-hidden="true"></div>
+        <div class="bay-floor" aria-hidden="true"></div>
+
+        <div class="pod-wrap">
+          <div class="pod-fallback" aria-hidden="true">
+            <div class="fallback-top">
+              <span>KSND LAB</span>
+              <small>ADAPTIVE RECONSTRUCTION UNIT<br>ARC-001</small>
+              <b>△</b>
+            </div>
+            <div class="fallback-glass">
+              <div class="fallback-particles"></div>
+              <div class="fallback-logo">
+                <div class="fallback-mark">△</div>
+                <strong>KSND</strong>
+                <span>LAB</span>
+              </div>
+              <i class="fallback-ring fallback-ring-top"></i>
+              <i class="fallback-ring fallback-ring-bottom"></i>
+            </div>
+            <div class="fallback-base"></div>
+          </div>
+
+          <img
+            src="assets/pod.png"
+            alt="KSND Lab adaptive reconstruction unit — a glowing gold and black containment pod"
+            onerror="this.hidden=true; this.parentElement.classList.add('pod-fallback-active')"
+          >
+        </div>
+      </div>
+      <a href="#" class="enter-btn">ENTER THE SYSTEM <span class="arrow">&#8594;</span></a>
+      <p class="awaiting">AWAITING INPUT<span class="blink">_</span></p>
+    </div>
+
+    <div class="right-col">
+      <div class="infinity-row">
+        <span>&#8734;</span>
+        <span class="slash">/</span>
+        <span class="grey-inf">&#8734;</span>
+      </div>
+      <div class="rule"></div>
+      <div>
+        <p class="mission-label">MISSION</p>
+        <p class="mission-text">BUILD. TEST.<br>LEARN. REPEAT.</p>
+      </div>
+      <div class="dashes">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
