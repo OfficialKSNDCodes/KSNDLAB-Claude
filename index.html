@@ -5,59 +5,218 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KSND Lab — System Active</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
   :root{
     --gold: #d4a24e;
     --gold-bright: #f0c675;
-    --bg: #050403;
+    --bg: #000000;
     --bg2: #0a0806;
     --text-dim: #7a7268;
     --text-dimmer: #4a453d;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
   }
 
   *{ box-sizing:border-box; }
 
   html,body{
     margin:0; padding:0;
-    background: var(--bg);
+    background: #000;
     color: #e8e0d0;
-    font-family: 'Courier New', ui-monospace, monospace;
+    font-family: var(--font-body);
     height:100%;
     overflow-x:hidden;
   }
 
-  /* faint starfield */
+  /* ===== KSND LAB ENVIRONMENT =====
+     Physical, architectural darkness rather than a flat web gradient.
+  */
+  .atmosphere{
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 760px 620px at 50% 43%, rgba(120,84,30,.12) 0%, rgba(35,22,8,.055) 34%, transparent 72%),
+      radial-gradient(ellipse 1200px 500px at 50% 100%, rgba(82,55,20,.10), transparent 68%),
+      linear-gradient(180deg, #020201 0%, #030201 48%, #000 100%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Deep architectural wall: barely visible until the amber light catches it. */
+  .distant-lights{
+    position:fixed; inset:0;
+    background:
+      /* distant horizontal industrial strips */
+      linear-gradient(90deg, transparent 0 7%, rgba(212,162,78,.035) 7.1%, transparent 7.3% 18%, rgba(212,162,78,.025) 18.1%, transparent 18.3% 81%, rgba(212,162,78,.025) 81.1%, transparent 81.3% 92%, rgba(212,162,78,.035) 92.1%, transparent 92.3%),
+      linear-gradient(180deg, transparent 0 17%, rgba(212,162,78,.045) 17.1%, transparent 17.35% 31%, rgba(212,162,78,.025) 31.1%, transparent 31.35% 68%, rgba(212,162,78,.025) 68.1%, transparent 68.35% 84%, rgba(212,162,78,.04) 84.1%, transparent 84.35%),
+      /* vertical structural ribs */
+      repeating-linear-gradient(90deg, transparent 0, transparent 8.8%, rgba(212,162,78,.018) 8.9%, transparent 9.05%),
+      /* distant amber fixtures */
+      radial-gradient(ellipse 90px 4px at 13% 24%, rgba(240,198,117,.20), transparent 70%),
+      radial-gradient(ellipse 120px 3px at 87% 27%, rgba(240,198,117,.16), transparent 70%),
+      radial-gradient(ellipse 75px 3px at 8% 62%, rgba(240,198,117,.10), transparent 70%),
+      radial-gradient(ellipse 110px 3px at 94% 66%, rgba(240,198,117,.11), transparent 70%),
+      /* tiny distant machine indicators */
+      radial-gradient(2px 2px at 87% 19%, rgba(240,198,117,.72), transparent),
+      radial-gradient(1px 1px at 91% 25%, rgba(240,198,117,.45), transparent),
+      radial-gradient(1px 1px at 82% 32%, rgba(240,198,117,.35), transparent),
+      radial-gradient(2px 2px at 95% 13%, rgba(240,198,117,.40), transparent),
+      radial-gradient(1px 1px at 77% 22%, rgba(240,198,117,.30), transparent),
+      radial-gradient(1px 1px at 90% 39%, rgba(240,198,117,.28), transparent);
+    opacity:.9;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Vertical laboratory columns / machinery silhouettes. */
   .stars{
     position:fixed; inset:0;
-    background-image:
-      radial-gradient(1px 1px at 20% 30%, rgba(212,162,78,.35), transparent),
-      radial-gradient(1px 1px at 70% 60%, rgba(212,162,78,.25), transparent),
-      radial-gradient(1px 1px at 40% 80%, rgba(212,162,78,.3), transparent),
-      radial-gradient(1px 1px at 85% 20%, rgba(212,162,78,.2), transparent),
-      radial-gradient(1px 1px at 55% 45%, rgba(212,162,78,.25), transparent),
-      radial-gradient(1px 1px at 10% 65%, rgba(212,162,78,.2), transparent),
-      radial-gradient(1px 1px at 90% 85%, rgba(212,162,78,.25), transparent);
-    background-repeat: repeat;
-    background-size: 400px 400px;
+    background:
+      linear-gradient(90deg,
+        transparent 0 7%,
+        rgba(255,220,150,.025) 7.1%,
+        rgba(0,0,0,.20) 7.5%,
+        transparent 8.2% 28%,
+        rgba(255,220,150,.018) 28.1%,
+        transparent 28.7% 71.3%,
+        rgba(255,220,150,.018) 71.4%,
+        transparent 72% 91.8%,
+        rgba(0,0,0,.22) 92.5%,
+        rgba(255,220,150,.025) 92.9%,
+        transparent 93.1%),
+      /* faint dust concentrated around the light field */
+      radial-gradient(1px 1px at 20% 30%, rgba(212,162,78,.22), transparent),
+      radial-gradient(1px 1px at 70% 60%, rgba(212,162,78,.16), transparent),
+      radial-gradient(1px 1px at 40% 80%, rgba(212,162,78,.18), transparent),
+      radial-gradient(1px 1px at 60% 15%, rgba(212,162,78,.15), transparent),
+      radial-gradient(1px 1px at 25% 50%, rgba(212,162,78,.14), transparent),
+      radial-gradient(1px 1px at 10% 65%, rgba(212,162,78,.12), transparent);
+    background-size:auto, 500px 500px;
+    background-repeat:no-repeat, repeat;
     pointer-events:none;
-    opacity:.6;
+    opacity:.75;
+    z-index:0;
+  }
+
+  /* Narrow amber light shafts, positioned around rather than behind the pod. */
+  .beams{
+    position:fixed; inset:-10%;
+    background:
+      linear-gradient(78deg, transparent 0 33%, rgba(212,162,78,.035) 36%, rgba(212,162,78,.075) 38%, rgba(212,162,78,.018) 41%, transparent 44%),
+      linear-gradient(102deg, transparent 0 57%, rgba(212,162,78,.025) 60%, rgba(212,162,78,.065) 62%, rgba(212,162,78,.018) 65%, transparent 68%),
+      linear-gradient(90deg, transparent 0 45%, rgba(240,198,117,.045) 49%, transparent 53%);
+    -webkit-mask-image:radial-gradient(ellipse 58% 72% at 50% 45%, black 0%, rgba(0,0,0,.8) 45%, transparent 82%);
+    mask-image:radial-gradient(ellipse 58% 72% at 50% 45%, black 0%, rgba(0,0,0,.8) 45%, transparent 82%);
+    pointer-events:none;
     z-index:0;
   }
 
   .vignette{
     position:fixed; inset:0;
-    background: radial-gradient(ellipse at 50% 45%, rgba(212,162,78,.06) 0%, rgba(0,0,0,0) 55%),
-                radial-gradient(ellipse at 50% 100%, rgba(0,0,0,.9) 0%, transparent 60%);
+    background:
+      radial-gradient(ellipse 62% 65% at 50% 43%, transparent 0%, transparent 38%, rgba(0,0,0,.28) 69%, rgba(0,0,0,.84) 100%),
+      linear-gradient(90deg, rgba(0,0,0,.30), transparent 18%, transparent 82%, rgba(0,0,0,.30)),
+      linear-gradient(180deg, rgba(0,0,0,.25), transparent 22%, transparent 74%, rgba(0,0,0,.72));
     pointer-events:none;
     z-index:0;
   }
 
-  .floorlines{
-    position:fixed; left:0; right:0; bottom:0; height:22vh;
-    background-image: repeating-linear-gradient(90deg, rgba(212,162,78,.05) 0px, rgba(212,162,78,.05) 1px, transparent 1px, transparent 90px);
-    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,.8), transparent);
-    mask-image: linear-gradient(to top, rgba(0,0,0,.8), transparent);
+  /* Perspective laboratory floor: lines converge toward the pod. */
+  .floor{
+    position:fixed; left:-15%; right:-15%; bottom:-3vh; height:39vh;
     pointer-events:none;
     z-index:0;
+    transform:perspective(520px) rotateX(57deg);
+    transform-origin:center bottom;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(212,162,78,.105) 0 1px, transparent 1px 72px),
+      repeating-linear-gradient(0deg, rgba(212,162,78,.10) 0 1px, transparent 1px 34px);
+    -webkit-mask-image:linear-gradient(to top, rgba(0,0,0,.9) 0%, rgba(0,0,0,.72) 45%, transparent 96%);
+    mask-image:linear-gradient(to top, rgba(0,0,0,.9) 0%, rgba(0,0,0,.72) 45%, transparent 96%);
+  }
+
+  .floor-glow{
+    position:fixed; left:50%; bottom:-5vh; width:1100px; height:360px;
+    transform:translateX(-50%);
+    background:
+      radial-gradient(ellipse 42% 70% at 50% 100%, rgba(240,198,117,.16) 0%, rgba(180,120,35,.055) 38%, transparent 73%);
+    filter:blur(2px);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Physical lab architecture: low-contrast structures that reveal themselves in the glow. */
+  .lab-architecture{
+    position:fixed; inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+
+  .arch{
+    position:absolute;
+    display:block;
+    background:
+      linear-gradient(90deg, rgba(255,220,150,.04), rgba(0,0,0,.55) 48%, rgba(255,220,150,.025));
+    border:1px solid rgba(212,162,78,.055);
+    box-shadow:
+      inset 0 0 22px rgba(212,162,78,.025),
+      0 0 30px rgba(0,0,0,.75);
+  }
+
+  .arch-left{
+    width:8vw; min-width:58px; height:72vh;
+    left:12vw; top:16vh;
+    transform:perspective(800px) rotateY(8deg);
+  }
+
+  .arch-right{
+    width:8vw; min-width:58px; height:72vh;
+    right:12vw; top:16vh;
+    transform:perspective(800px) rotateY(-8deg);
+  }
+
+  .arch-top{
+    width:48vw; height:9vh;
+    left:26vw; top:8vh;
+    border-radius:4px 4px 50% 50%;
+    opacity:.75;
+  }
+
+  .arch-back{
+    width:62vw; height:58vh;
+    left:19vw; top:22vh;
+    border-color:rgba(212,162,78,.025);
+    background:
+      linear-gradient(90deg, transparent, rgba(212,162,78,.025), transparent),
+      repeating-linear-gradient(90deg, transparent 0 11.8%, rgba(212,162,78,.025) 12%, transparent 12.2%);
+    box-shadow:none;
+  }
+
+  .fixture{
+    position:absolute;
+    width:13vw; height:2px;
+    background:linear-gradient(90deg, transparent, rgba(240,198,117,.16), transparent);
+    filter:blur(.2px);
+  }
+
+  .fixture-left{
+    left:3vw; top:31vh;
+    transform:rotate(-9deg);
+  }
+
+  .fixture-right{
+    right:3vw; top:35vh;
+    transform:rotate(9deg);
+  }
+
+  /* subtle grain to break up flat gradients */
+  .grain{
+    position:fixed; inset:0;
+    opacity:.04;
+    pointer-events:none;
+    z-index:1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   .stage{
@@ -76,12 +235,13 @@
     position:absolute; top:40px; left:5vw;
   }
   .brand-mark{
-    font-size:26px; letter-spacing:10px; font-weight:700; color:#f2ead9;
-    margin:0 0 6px 0;
+    font-family: var(--font-display);
+    font-size:24px; letter-spacing:10px; font-weight:700; color:#f2ead9;
+    margin:0 0 8px 0;
   }
   .brand-mark .dots{ color: var(--text-dimmer); letter-spacing:6px; }
   .brand-sub{
-    font-size:11px; letter-spacing:3px; color: var(--text-dim);
+    font-size:12px; letter-spacing:3px; font-weight:600; color: var(--text-dim);
   }
 
   .topright{
@@ -107,7 +267,8 @@
     display:flex;
     flex-direction:column;
     gap:26px;
-    font-size:11px;
+    font-size:12px;
+    font-weight:600;
     letter-spacing:2px;
     color: var(--text-dim);
   }
@@ -115,12 +276,14 @@
     display:block;
     color: var(--text-dimmer);
     margin-bottom:6px;
-    font-size:10px;
+    font-size:11px;
+    font-weight:600;
     letter-spacing:3px;
   }
   .left-col .field-value{
     color:#eee3cc;
-    font-size:13px;
+    font-size:16px;
+    font-weight:700;
     letter-spacing:2px;
     display:flex;
     align-items:center;
@@ -176,6 +339,21 @@
     position:relative;
     width:100%;
     max-width:420px;
+    z-index:2;
+  }
+
+  .pod-wrap::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:12%;
+    width:72%;
+    height:72%;
+    transform:translateX(-50%);
+    background:radial-gradient(ellipse, rgba(240,198,117,.08), transparent 68%);
+    filter:blur(24px);
+    z-index:-1;
+    pointer-events:none;
   }
   .pod-wrap img{
     width:100%;
@@ -195,7 +373,8 @@
     background: rgba(212,162,78,.04);
     border: 1px solid rgba(212,162,78,.55);
     color: #f2ead9;
-    font-family: inherit;
+    font-family: var(--font-display);
+    font-weight:600;
     letter-spacing: 5px;
     font-size: 13px;
     padding: 18px 26px;
@@ -207,7 +386,9 @@
     text-decoration:none;
     text-align:center;
     transition: all .3s ease;
-    box-shadow: inset 0 0 20px rgba(212,162,78,.05);
+    box-shadow:
+      inset 0 0 20px rgba(212,162,78,.05),
+      0 18px 50px rgba(0,0,0,.55);
   }
   .enter-btn:hover{
     background: rgba(212,162,78,.1);
@@ -224,7 +405,8 @@
 
   .awaiting{
     margin-top:16px;
-    font-size:10px;
+    font-size:11px;
+    font-weight:600;
     letter-spacing:4px;
     color: var(--text-dimmer);
   }
@@ -267,16 +449,19 @@
     margin: 8px 0 18px;
   }
   .mission-label{
-    font-size:10px;
+    font-size:11px;
+    font-weight:600;
     letter-spacing:3px;
     color: var(--text-dimmer);
     margin-bottom:8px;
   }
   .mission-text{
+    font-family: var(--font-display);
     font-size:15px;
-    letter-spacing:2px;
+    font-weight:700;
+    letter-spacing:1px;
     color:#eee3cc;
-    line-height:1.6;
+    line-height:1.7;
   }
   .dashes{
     margin-top:30px;
@@ -314,9 +499,22 @@
 </head>
 <body>
 
+  <div class="atmosphere"></div>
+  <div class="distant-lights"></div>
   <div class="stars"></div>
+  <div class="beams"></div>
   <div class="vignette"></div>
-  <div class="floorlines"></div>
+  <div class="floor"></div>
+  <div class="floor-glow"></div>
+  <div class="lab-architecture" aria-hidden="true">
+    <i class="arch arch-left"></i>
+    <i class="arch arch-right"></i>
+    <i class="arch arch-top"></i>
+    <i class="arch arch-back"></i>
+    <i class="fixture fixture-left"></i>
+    <i class="fixture fixture-right"></i>
+  </div>
+  <div class="grain"></div>
 
   <div class="topleft">
     <p class="brand-mark">K S N D <span class="dots">. . . . .</span></p>
